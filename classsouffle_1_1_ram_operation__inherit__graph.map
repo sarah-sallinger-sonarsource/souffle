@@ -1,0 +1,22 @@
+<map id="souffle::RamOperation" name="souffle::RamOperation">
+<area shape="rect" id="node3" href="$classsouffle_1_1_ram_nested_operation.html" title="Abstract class for a nesting operations in a loop&#45;nest. " alt="" coords="271,410,481,590"/>
+<area shape="rect" id="node20" href="$classsouffle_1_1_ram_project.html" title="Projection. " alt="" coords="506,403,651,597"/>
+<area shape="rect" id="node21" href="$classsouffle_1_1_ram_return_value.html" title="A statement for returning from a ram subroutine. " alt="" coords="675,417,853,583"/>
+<area shape="rect" id="node2" href="$classsouffle_1_1_ram_node.html" title="RamNode is a superclass for all RAM IR classes. " alt="" coords="509,5,649,200"/>
+<area shape="rect" id="node4" href="$classsouffle_1_1_ram_break.html" title="Break statement. " alt="" coords="142,645,282,811"/>
+<area shape="rect" id="node5" href="$classsouffle_1_1_ram_filter.html" title="Filter statement. " alt="" coords="306,645,446,811"/>
+<area shape="rect" id="node6" href="$classsouffle_1_1_ram_search.html" title="Abstract class for relation searches and lookups. " alt="" coords="471,660,617,796"/>
+<area shape="rect" id="node7" href="$classsouffle_1_1_ram_relation_search.html" title="Abstract class for relation searches. " alt="" coords="337,888,533,1024"/>
+<area shape="rect" id="node19" href="$classsouffle_1_1_ram_unpack_record.html" title="Record lookup. " alt="" coords="557,859,749,1053"/>
+<area shape="rect" id="node8" href="$classsouffle_1_1_ram_aggregate.html" title="Aggregation. " alt="" coords="72,1101,240,1325"/>
+<area shape="rect" id="node9" href="$classsouffle_1_1_ram_choice.html" title="Find a tuple in a relation such that a given condition holds. " alt="" coords="264,1131,408,1296"/>
+<area shape="rect" id="node11" href="$classsouffle_1_1_ram_index_relation_search.html" title="Relation Scan with Index. " alt="" coords="432,1138,637,1289"/>
+<area shape="rect" id="node17" href="$classsouffle_1_1_ram_scan.html" title="Relation Scan. " alt="" coords="761,1160,895,1267"/>
+<area shape="rect" id="node10" href="$classsouffle_1_1_ram_parallel_choice.html" title="Find a tuple in a relation such that a given condition holds. " alt="" coords="5,1432,195,1539"/>
+<area shape="rect" id="node12" href="$classsouffle_1_1_ram_index_aggregate.html" title="Index Aggregation. " alt="" coords="219,1373,421,1597"/>
+<area shape="rect" id="node13" href="$classsouffle_1_1_ram_index_choice.html" title="Use an index to find a tuple in a relation such that a given condition holds. " alt="" coords="445,1403,624,1568"/>
+<area shape="rect" id="node15" href="$classsouffle_1_1_ram_index_scan.html" title="Relation Scan with Index. " alt="" coords="649,1432,815,1539"/>
+<area shape="rect" id="node14" href="$classsouffle_1_1_ram_parallel_index_choice.html" title="Use an index to find a tuple in a relation such that a given condition holds. " alt="" coords="419,1645,618,1767"/>
+<area shape="rect" id="node16" href="$classsouffle_1_1_ram_parallel_index_scan.html" title="Parallel Relation Scan with Index. " alt="" coords="642,1653,854,1759"/>
+<area shape="rect" id="node18" href="$classsouffle_1_1_ram_parallel_scan.html" title="Parallel Relation Scan. " alt="" coords="840,1432,1019,1539"/>
+</map>

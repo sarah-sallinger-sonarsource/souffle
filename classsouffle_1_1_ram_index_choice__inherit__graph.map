@@ -1,0 +1,9 @@
+<map id="souffle::RamIndexChoice" name="souffle::RamIndexChoice">
+<area shape="rect" id="node8" href="$classsouffle_1_1_ram_parallel_index_choice.html" title="Use an index to find a tuple in a relation such that a given condition holds. " alt="" coords="11,1411,210,1532"/>
+<area shape="rect" id="node2" href="$classsouffle_1_1_ram_index_relation_search.html" title="Relation Scan with Index. " alt="" coords="8,999,213,1149"/>
+<area shape="rect" id="node3" href="$classsouffle_1_1_ram_relation_search.html" title="Abstract class for relation searches. " alt="" coords="13,815,209,951"/>
+<area shape="rect" id="node4" href="$classsouffle_1_1_ram_search.html" title="Abstract class for relation searches and lookups. " alt="" coords="37,631,184,767"/>
+<area shape="rect" id="node5" href="$classsouffle_1_1_ram_nested_operation.html" title="Abstract class for a nesting operations in a loop&#45;nest. " alt="" coords="5,403,216,583"/>
+<area shape="rect" id="node6" href="$classsouffle_1_1_ram_operation.html" title="Abstract class for a relational algebra operation. " alt="" coords="29,248,193,355"/>
+<area shape="rect" id="node7" href="$classsouffle_1_1_ram_node.html" title="RamNode is a superclass for all RAM IR classes. " alt="" coords="41,5,181,200"/>
+</map>
