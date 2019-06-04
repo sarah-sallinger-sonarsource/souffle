@@ -45,7 +45,7 @@ public:
  */
 class RamTrue : public RamCondition {
 public:
-    RamTrue() : RamCondition() {}
+    RamTrue() = default;
 
     void print(std::ostream& os) const override {
         os << "true";
@@ -65,7 +65,7 @@ inline bool isRamTrue(const RamCondition* cond) {
  */
 class RamFalse : public RamCondition {
 public:
-    RamFalse() : RamCondition() {}
+    RamFalse() = default;
 
     void print(std::ostream& os) const override {
         os << "false";
@@ -269,9 +269,7 @@ public:
     void apply(const RamNodeMapper& map) override {
         relationRef = map(std::move(relationRef));
         for (auto& val : values) {
-            if (val != nullptr) {
-                val = map(std::move(val));
-            }
+            val = map(std::move(val));
         }
     }
 
@@ -314,11 +312,7 @@ public:
     RamExistenceCheck* clone() const override {
         std::vector<std::unique_ptr<RamExpression>> newValues;
         for (auto& cur : values) {
-            RamExpression* val = nullptr;
-            if (cur != nullptr) {
-                val = cur->clone();
-            }
-            newValues.emplace_back(val);
+            newValues.emplace_back(cur->clone());
         }
         return new RamExistenceCheck(
                 std::unique_ptr<RamRelationReference>(relationRef->clone()), std::move(newValues));
@@ -350,11 +344,7 @@ public:
     RamProvenanceExistenceCheck* clone() const override {
         std::vector<std::unique_ptr<RamExpression>> newValues;
         for (auto& cur : values) {
-            RamExpression* val = nullptr;
-            if (cur != nullptr) {
-                val = cur->clone();
-            }
-            newValues.emplace_back(val);
+            newValues.emplace_back(cur->clone());
         }
         return new RamProvenanceExistenceCheck(
                 std::unique_ptr<RamRelationReference>(relationRef->clone()), std::move(newValues));
