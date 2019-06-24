@@ -1751,6 +1751,9 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
         os << "#include <thread>\n";
         os << "#include \"souffle/profile/Tui.h\"\n";
     }
+    os << "#include <sys/time.h>\n";
+    os << "#include <sys/resource.h>\n";
+
     os << "\n";
     // produce external definitions for user-defined functors
     std::map<std::string, std::string> functors;
@@ -2390,13 +2393,24 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
         os << "obj.runAll(opt.getInputFileDir(), opt.getOutputFileDir(), opt.getStratumIndex());\n";
     }
 
-    if (Global::config().get("provenance") == "explain") {
-        os << "explain(obj, false, false);\n";
-    } else if (Global::config().get("provenance") == "subtreeHeights") {
-        os << "obj.copyIndex();\n";
-        os << "explain(obj, false, true);\n";
-    } else if (Global::config().get("provenance") == "explore") {
-        os << "explain(obj, true, false);\n";
+    os << "struct rusage ru;\n";
+    os << "std::cerr << \"maxRSS bottom up: \";\n";
+    os << "getrusage(RUSAGE_SELF, &ru);\n";
+    os << "std::cerr << ru.ru_maxrss << \" KB\\n\";\n";
+
+    if(Global::config().has("provenance")){
+		if (Global::config().get("provenance") == "explain") {
+			os << "explain(obj, false, false);\n";
+		} else if (Global::config().get("provenance") == "subtreeHeights") {
+			os << "obj.copyIndex();\n";
+			os << "explain(obj, false, true);\n";
+		} else if (Global::config().get("provenance") == "explore") {
+			os << "explain(obj, true, false);\n";
+		}
+		os << "std::cerr << \"maxRSS top down: \";\n";
+		os << "getrusage(RUSAGE_SELF, &ru);\n";
+		os << "std::cerr << ru.ru_maxrss << \" KB\\n\";\n";
+
     }
     os << "return 0;\n";
     os << "} catch(std::exception &e) { souffle::SignalHandler::instance()->error(e.what());}\n";
