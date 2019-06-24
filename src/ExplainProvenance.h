@@ -71,7 +71,7 @@ public:
 
     virtual std::vector<std::string> getRules(std::string relName) = 0;
 
-    virtual std::string measureRelation(std::string relName) = 0;
+    virtual void measureRelation(std::string relName, std::ostream& ss) = 0;
 
     virtual void printRulesJSON(std::ostream& os) = 0;
 

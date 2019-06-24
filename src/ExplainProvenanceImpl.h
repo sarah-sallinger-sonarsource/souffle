@@ -503,11 +503,12 @@ public:
         return relRules;
     }
 
-    std::string measureRelation(std::string relName) override {
+    void measureRelation(std::string relName, std::ostream& os) override {
         auto rel = prog.getRelation(relName);
 
         if (rel == nullptr) {
-            return "No relation found\n";
+            //return "No relation found\n";
+        	return;
         }
 
         auto size = rel->size();
@@ -515,9 +516,9 @@ public:
 
         if (skip == 0) skip = 1;
 
-        std::stringstream ss;
+        //std::stringstream ss;
 
-        auto before_time = std::chrono::high_resolution_clock::now();
+        //auto before_time = std::chrono::high_resolution_clock::now();
 
         int numTuples = 0;
         int proc = 0;
@@ -558,7 +559,7 @@ public:
                 subtreeLevels.push_back(subLevel);
             }
 
-            std::cout << "Tuples expanded: " << explain(relName, currentTuple, ruleNum, levelNum, subtreeLevels, 10000)->getSize();
+            os << explain(relName, currentTuple, ruleNum, levelNum, subtreeLevels, 10000)->getSize();
 
             numTuples++;
             proc++;
@@ -567,16 +568,17 @@ public:
             auto tupleDuration =
             std::chrono::duration_cast<std::chrono::duration<double>>(tupleEnd - tupleStart);
 
-            std::cout << ", Time: " << tupleDuration.count() << "\n";
+            os << "\t" << tupleDuration.count() << std::endl;
         }
 
-        auto after_time = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(after_time - before_time);
+        //auto after_time = std::chrono::high_resolution_clock::now();
+        //auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(after_time - before_time);
 
-        ss << "total: " << proc << " ";
-        ss << duration.count() << std::endl;
+        //ss << "total: " << proc << " ";
+        //ss << duration.count() << std::endl;
+        //ss << std::endl;
 
-        return ss.str();
+        //return ss.str();
     }
 
     void printRulesJSON(std::ostream& os) override {

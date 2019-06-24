@@ -158,7 +158,7 @@ public:
 
             printTree(prov.explainNegation(query.first, std::stoi(ruleNum), query.second, varValues));
         } else if (command[0] == "rule" && command.size() == 2) {
-            auto query = split(command[1], ' ');
+            auto query = split(command[1], ' ', 1);
             if (query.size() != 2) {
                 printError("Usage: rule <relation name> <rule number>\n");
                 return true;
@@ -170,9 +170,17 @@ public:
             }
         } else if (command[0] == "measure") {
             try {
-                printInfo(prov.measureRelation(command[1]));
+                prov.measureRelation(command[1], std::cout);
             } catch (std::exception& e) {
                 printError("Usage: measure <relation name>\n");
+            }
+        } else if (command[0] == "measureTSV") {
+            try {
+            	auto in = split(command[1], ' ', 1);
+            	auto os = std::make_unique<std::ofstream>(in[1]);
+                prov.measureRelation(in[0], *os);
+            } catch (std::exception& e) {
+                printError("Usage: measureTSV <relation name> <file name>\n");
             }
         } else if (command[0] == "output") {
             if (command.size() == 2) {

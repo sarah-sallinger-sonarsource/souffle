@@ -2394,9 +2394,8 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
     }
 
     os << "struct rusage ru;\n";
-    os << "std::cerr << \"maxRSS bottom up: \";\n";
     os << "getrusage(RUSAGE_SELF, &ru);\n";
-    os << "std::cerr << ru.ru_maxrss << \" KB\\n\";\n";
+    os << "std::cerr << ru.ru_maxrss;\n";
 
     if(Global::config().has("provenance")){
 		if (Global::config().get("provenance") == "explain") {
@@ -2407,11 +2406,10 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
 		} else if (Global::config().get("provenance") == "explore") {
 			os << "explain(obj, true, false);\n";
 		}
-		os << "std::cerr << \"maxRSS top down: \";\n";
 		os << "getrusage(RUSAGE_SELF, &ru);\n";
-		os << "std::cerr << ru.ru_maxrss << \" KB\\n\";\n";
-
+		os << "std::cerr << \"\\t\" << ru.ru_maxrss;\n";
     }
+    os << "std::cerr << std::endl;\n";
     os << "return 0;\n";
     os << "} catch(std::exception &e) { souffle::SignalHandler::instance()->error(e.what());}\n";
     os << "}\n";
