@@ -2020,6 +2020,9 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
 
     // add actual program body
     os << "// -- query evaluation --\n";
+
+    os << "auto bottom_up_start = std::chrono::high_resolution_clock::now();\n";
+
     if (Global::config().has("profile")) {
         os << "ProfileEventSingleton::instance().startTimer();\n";
         os << R"_(ProfileEventSingleton::instance().makeTimeEvent("@time;starttime");)_" << '\n';
@@ -2102,6 +2105,10 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
         os << "ProfileEventSingleton::instance().stopTimer();\n";
         os << "dumpFreqs();\n";
     }
+
+    os << "auto bottom_up_end = std::chrono::high_resolution_clock::now();\n";
+    os << "auto bottom_up_dur = std::chrono::duration_cast<std::chrono::duration<double>>(bottom_up_end - bottom_up_start);\n";
+    os << "std::cerr << bottom_up_dur.count() << \"\\t\";\n";
 
     // add code printing hint statistics
     os << "\n// -- relation hint statistics --\n";
@@ -2406,10 +2413,7 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
 		} else if (Global::config().get("provenance") == "explore") {
 			os << "explain(obj, true, false);\n";
 		}
-		os << "getrusage(RUSAGE_SELF, &ru);\n";
-		os << "std::cerr << \"\\t\" << ru.ru_maxrss;\n";
     }
-    os << "std::cerr << std::endl;\n";
     os << "return 0;\n";
     os << "} catch(std::exception &e) { souffle::SignalHandler::instance()->error(e.what());}\n";
     os << "}\n";

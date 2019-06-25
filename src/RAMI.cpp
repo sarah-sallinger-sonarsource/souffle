@@ -1066,7 +1066,11 @@ void RAMI::executeMain() {
     const RamStatement& main = *translationUnit.getProgram()->getMain();
 
     if (!Global::config().has("profile")) {
+    	auto bottom_up_start = std::chrono::high_resolution_clock::now();
         evalStmt(main);
+        auto bottom_up_end = std::chrono::high_resolution_clock::now();
+        auto bottom_up_dur = std::chrono::duration_cast<std::chrono::duration<double>>(bottom_up_end - bottom_up_start);
+        std::cerr << bottom_up_dur.count() << "\t";
     } else {
         ProfileEventSingleton::instance().setOutputFile(Global::config().get("profile"));
         // Prepare the frequency table for threaded use

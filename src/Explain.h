@@ -23,6 +23,8 @@
 #include <regex>
 #include <string>
 #include <unistd.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #ifdef USE_NCURSES
 #include <ncurses.h>
@@ -293,6 +295,12 @@ public:
 
     /* The main explain call */
     void explain() override {
+    	//print memory usage stats
+		struct rusage ru;
+		getrusage(RUSAGE_SELF, &ru);
+		std::cerr << "\t" << ru.ru_maxrss;
+		std::cerr << std::endl;
+
         printPrompt("Explain is invoked.\n");
 
         while (true) {

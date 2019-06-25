@@ -547,11 +547,17 @@ int main(int argc, char** argv) {
             if (profiler.joinable()) {
                 profiler.join();
             }
+            //print memory usage stats
+            struct rusage ru;
+            getrusage(RUSAGE_SELF, &ru);
+            std::cerr << ru.ru_maxrss;
+
             // only run explain interface if interpreted
             if (Global::config().has("provenance")) {
                 LVMProgInterface interface(*lvm);
                 if (Global::config().get("provenance") == "explain" ||
                         Global::config().get("provenance") == "subtreeHeights") {
+
                     explain(interface, false, Global::config().get("provenance") == "subtreeHeights");
                 } else if (Global::config().get("provenance") == "explore") {
                     explain(interface, true, false);
@@ -564,6 +570,12 @@ int main(int argc, char** argv) {
             if (profiler.joinable()) {
                 profiler.join();
             }
+
+            //print memory usage stats
+			struct rusage ru;
+			getrusage(RUSAGE_SELF, &ru);
+			std::cerr << ru.ru_maxrss;
+
             // only run explain interface if interpreted
             if (Global::config().has("provenance")) {
                 RAMIProgInterface interface(*rami);
