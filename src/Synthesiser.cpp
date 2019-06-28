@@ -2407,12 +2407,19 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
     if(Global::config().has("provenance")){
 		if (Global::config().get("provenance") == "explain") {
 			os << "explain(obj, false, false);\n";
+			os << "std::cerr << \"\\t\" << \"0\";\n";
 		} else if (Global::config().get("provenance") == "subtreeHeights") {
+			os << "auto index_cp_start = std::chrono::high_resolution_clock::now();\n";
 			os << "obj.copyIndex();\n";
+			os << "auto index_cp_end = std::chrono::high_resolution_clock::now();\n";
+			os << "auto index_cp_dur = std::chrono::duration_cast<std::chrono::duration<double>>(index_cp_end - index_cp_start);\n";
 			os << "explain(obj, false, true);\n";
+			os << "std::cerr << \"\\t\" << index_cp_dur.count();\n";
 		} else if (Global::config().get("provenance") == "explore") {
 			os << "explain(obj, true, false);\n";
+			os << "std::cerr  << \"\\t\" << \"0\";\n";
 		}
+		std::cerr << std::endl;
     }
     os << "return 0;\n";
     os << "} catch(std::exception &e) { souffle::SignalHandler::instance()->error(e.what());}\n";

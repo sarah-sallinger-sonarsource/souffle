@@ -299,7 +299,6 @@ public:
 		struct rusage ru;
 		getrusage(RUSAGE_SELF, &ru);
 		std::cerr << "\t" << ru.ru_maxrss;
-		std::cerr << std::endl;
 
         printPrompt("Explain is invoked.\n");
 
