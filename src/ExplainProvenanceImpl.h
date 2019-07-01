@@ -507,8 +507,8 @@ public:
         auto rel = prog.getRelation(relName);
 
         if (rel == nullptr) {
-            //return "No relation found\n";
-        	return;
+            // return "No relation found\n";
+            return;
         }
 
         auto size = rel->size();
@@ -516,14 +516,14 @@ public:
 
         if (skip == 0) skip = 1;
 
-        //std::stringstream ss;
+        // std::stringstream ss;
 
-        //auto before_time = std::chrono::high_resolution_clock::now();
+        // auto before_time = std::chrono::high_resolution_clock::now();
 
         int numTuples = 0;
         int proc = 0;
         for (auto& tuple : *rel) {
-           auto tupleStart = std::chrono::high_resolution_clock::now();
+            auto tupleStart = std::chrono::high_resolution_clock::now();
 
             // measure for all tuples
             /*if (numTuples % skip != 0) {
@@ -566,19 +566,20 @@ public:
 
             auto tupleEnd = std::chrono::high_resolution_clock::now();
             auto tupleDuration =
-            std::chrono::duration_cast<std::chrono::duration<double>>(tupleEnd - tupleStart);
+                    std::chrono::duration_cast<std::chrono::duration<double>>(tupleEnd - tupleStart);
 
             os << "\t" << tupleDuration.count() << std::endl;
         }
 
-        //auto after_time = std::chrono::high_resolution_clock::now();
-        //auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(after_time - before_time);
+        // auto after_time = std::chrono::high_resolution_clock::now();
+        // auto duration = std::chrono::duration_cast<std::chrono::duration<double>>(after_time -
+        // before_time);
 
-        //ss << "total: " << proc << " ";
-        //ss << duration.count() << std::endl;
-        //ss << std::endl;
+        // ss << "total: " << proc << " ";
+        // ss << duration.count() << std::endl;
+        // ss << std::endl;
 
-        //return ss.str();
+        // return ss.str();
     }
 
     void printRulesJSON(std::ostream& os) override {

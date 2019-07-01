@@ -22,9 +22,9 @@
 #include <iostream>
 #include <regex>
 #include <string>
-#include <unistd.h>
-#include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 #ifdef USE_NCURSES
 #include <ncurses.h>
@@ -178,8 +178,8 @@ public:
             }
         } else if (command[0] == "measureTSV") {
             try {
-            	auto in = split(command[1], ' ', 1);
-            	auto os = std::make_unique<std::ofstream>(in[1]);
+                auto in = split(command[1], ' ', 1);
+                auto os = std::make_unique<std::ofstream>(in[1]);
                 prov.measureRelation(in[0], *os);
             } catch (std::exception& e) {
                 printError("Usage: measureTSV <relation name> <file name>\n");
@@ -295,10 +295,10 @@ public:
 
     /* The main explain call */
     void explain() override {
-    	//print memory usage stats
-		struct rusage ru;
-		getrusage(RUSAGE_SELF, &ru);
-		std::cerr << "\t" << ru.ru_maxrss;
+        // print memory usage stats
+        struct rusage ru;
+        getrusage(RUSAGE_SELF, &ru);
+        std::cerr << "\t" << ru.ru_maxrss;
 
         printPrompt("Explain is invoked.\n");
 
