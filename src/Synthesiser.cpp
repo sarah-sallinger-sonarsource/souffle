@@ -184,9 +184,10 @@ std::set<const RamRelation*> Synthesiser::getReferencedRelations(const RamOperat
     return res;
 }
 
-void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt) {
+void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt, bool countIdxAccesses) {
     class CodeEmitter : public RamVisitor<void, std::ostream&> {
     private:
+        bool countIdxAccesses;
         Synthesiser& synthesiser;
         RamIndexAnalysis* isa;
 
@@ -208,8 +209,9 @@ void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt) {
         bool preambleIssued = false;
 
     public:
-        CodeEmitter(Synthesiser& syn)
-                : synthesiser(syn), isa(syn.getTranslationUnit().getAnalysis<RamIndexAnalysis>()) {
+        CodeEmitter(Synthesiser& syn, bool countIdxAccesses)
+                : countIdxAccesses(countIdxAccesses), synthesiser(syn),
+                  isa(syn.getTranslationUnit().getAnalysis<RamIndexAnalysis>()) {
             rec = [&](std::ostream& out, const RamNode* node) { this->visit(*node, out); };
         }
 
@@ -704,6 +706,8 @@ void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt) {
 
             out << "auto range = " << relName << "->"
                 << "equalRange_" << keys << "(key," << ctxName << ");\n";
+            if (countIdxAccesses) out << "nrOfIdxAccesses++;\n";
+
             out << "for(const auto& env" << identifier << " : range) {\n";
 
             visitTupleOperation(iscan, out);
@@ -744,6 +748,7 @@ void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt) {
                 << "->"
                 // TODO (b-scholz): context may be missing here?
                 << "equalRange_" << keys << "(key);\n";
+            if (countIdxAccesses) out << "nrOfIdxAccesses++;\n";
             out << "auto part = range.partition();\n";
             out << "PARALLEL_START;\n";
             out << preamble.str();
@@ -789,6 +794,7 @@ void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt) {
 
             out << "auto range = " << relName << "->"
                 << "equalRange_" << keys << "(key," << ctxName << ");\n";
+            if (countIdxAccesses) out << "nrOfIdxAccesses++;\n";
             out << "for(const auto& env" << identifier << " : range) {\n";
             out << "if( ";
 
@@ -838,6 +844,7 @@ void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt) {
                 << "->"
                 // TODO (b-scholz): context may be missing here?
                 << "equalRange_" << keys << "(key);\n";
+            if (countIdxAccesses) out << "nrOfIdxAccesses++;\n";
             out << "auto part = range.partition();\n";
             out << "PARALLEL_START;\n";
             out << preamble.str();
@@ -960,7 +967,7 @@ void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt) {
                 out << "}});\n";
                 out << "auto range = " << relName << "->"
                     << "equalRange_" << keys << "(key," << ctxName << ");\n";
-
+                if (countIdxAccesses) out << "nrOfIdxAccesses++;\n";
                 // aggregate result
                 out << "for(const auto& env" << identifier << " : range) {\n";
             }
@@ -1714,7 +1721,7 @@ void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt) {
     };
 
     // emit code
-    CodeEmitter(*this).visit(stmt, out);
+    CodeEmitter(*this, countIdxAccesses).visit(stmt, out);
 }
 
 void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& withSharedLibrary) {
@@ -1803,6 +1810,9 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
     os << '\n';
 
     os << "class " << classname << " : public SouffleProgram {\n";
+
+    os << "public:\n";
+    os << "int nrOfIdxAccesses;\n";
 
     // regex wrapper
     os << "private:\n";
@@ -1986,6 +1996,7 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
         os << "ProfileEventSingleton::instance().setOutputFile(profiling_fname);\n";
     }
     os << registerRel;
+    os << "nrOfIdxAccesses = 0;\n";
     os << "}\n";
     // -- destructor --
 
@@ -2107,7 +2118,8 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
     }
 
     os << "auto bottom_up_end = std::chrono::high_resolution_clock::now();\n";
-    os << "auto bottom_up_dur = std::chrono::duration_cast<std::chrono::duration<double>>(bottom_up_end - bottom_up_start);\n";
+    os << "auto bottom_up_dur = std::chrono::duration_cast<std::chrono::duration<double>>(bottom_up_end - "
+          "bottom_up_start);\n";
     os << "std::cerr << bottom_up_dur.count() << \"\\t\";\n";
 
     // add code printing hint statistics
@@ -2314,7 +2326,7 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
             os << "std::mutex lock;\n";
 
             // generate code for body
-            emitCode(os, *sub.second);
+            emitCode(os, *sub.second, true);
 
             os << "return;\n";
             os << "}\n";  // end of subroutine
@@ -2404,22 +2416,25 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
     os << "getrusage(RUSAGE_SELF, &ru);\n";
     os << "std::cerr << ru.ru_maxrss;\n";
 
-    if(Global::config().has("provenance")){
-		if (Global::config().get("provenance") == "explain") {
-			os << "explain(obj, false, false);\n";
-			os << "std::cerr << \"\\t\" << \"0\";\n";
-		} else if (Global::config().get("provenance") == "subtreeHeights") {
-			os << "auto index_cp_start = std::chrono::high_resolution_clock::now();\n";
-			os << "obj.copyIndex();\n";
-			os << "auto index_cp_end = std::chrono::high_resolution_clock::now();\n";
-			os << "auto index_cp_dur = std::chrono::duration_cast<std::chrono::duration<double>>(index_cp_end - index_cp_start);\n";
-			os << "explain(obj, false, true);\n";
-			os << "std::cerr << \"\\t\" << index_cp_dur.count();\n";
-		} else if (Global::config().get("provenance") == "explore") {
-			os << "explain(obj, true, false);\n";
-			os << "std::cerr  << \"\\t\" << \"0\";\n";
-		}
-		std::cerr << std::endl;
+    if (Global::config().has("provenance")) {
+        if (Global::config().get("provenance") == "explain") {
+            os << "explain(obj, false, false);\n";
+            os << "std::cerr << \"\\t\" << \"0\";\n";
+        } else if (Global::config().get("provenance") == "subtreeHeights") {
+            os << "auto index_cp_start = std::chrono::high_resolution_clock::now();\n";
+            os << "obj.copyIndex();\n";
+            os << "auto index_cp_end = std::chrono::high_resolution_clock::now();\n";
+            os << "auto index_cp_dur = "
+                  "std::chrono::duration_cast<std::chrono::duration<double>>(index_cp_end - "
+                  "index_cp_start);\n";
+            os << "explain(obj, false, true);\n";
+            os << "std::cerr << \"\\t\" << index_cp_dur.count();\n";
+        } else if (Global::config().get("provenance") == "explore") {
+            os << "explain(obj, true, false);\n";
+            os << "std::cerr  << \"\\t\" << \"0\";\n";
+        }
+        os << "std::cerr  << \"\\t\" << obj.nrOfIdxAccesses;\n";
+        os << "std::cerr << std::endl;\n";
     }
     os << "return 0;\n";
     os << "} catch(std::exception &e) { souffle::SignalHandler::instance()->error(e.what());}\n";
