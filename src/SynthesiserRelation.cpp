@@ -172,6 +172,7 @@ void SynthesiserDirectRelation::computeIndices() {
         masterIndex = 0;
     }
 
+
     assert(masterIndex >= 0 && masterIndex < inds.size());
 
     computedIndices = inds;

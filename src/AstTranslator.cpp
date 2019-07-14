@@ -1213,7 +1213,7 @@ std::unique_ptr<RamStatement> AstTranslator::translateRecursiveRelation(
 }
 
 /** make a subroutine to search for subproofs */
-std::unique_ptr<RamStatement> AstTranslator::makeSubproofSubroutine(const AstClause& clause) {
+std::unique_ptr<RamStatement> AstTranslator::makeSubproofSubroutine(const AstClause& clause, bool updates) {
     // make intermediate clause with constraints
     std::unique_ptr<AstClause> intermediateClause(clause.clone());
 
@@ -1245,19 +1245,38 @@ std::unique_ptr<RamStatement> AstTranslator::makeSubproofSubroutine(const AstCla
         size_t levelIndex = head->getArguments().size() - numberOfHeights - 1;
 
         // add level constraints
-        for (size_t i = 0; i < intermediateClause->getBodyLiterals().size(); i++) {
-            auto lit = intermediateClause->getBodyLiteral(i);
-            if (auto atom = dynamic_cast<AstAtom*>(lit)) {
-                auto arity = atom->getArity();
-                auto literalHeights = program->getRelation(atom->getName())->numberOfHeightParameters();
-                auto literalLevelIndex = arity - literalHeights;
+        if(!updates) {
+			for (size_t i = 0; i < intermediateClause->getBodyLiterals().size(); i++) {
+				auto lit = intermediateClause->getBodyLiteral(i);
+				if (auto atom = dynamic_cast<AstAtom*>(lit)) {
+					auto arity = atom->getArity();
+					auto literalHeights = program->getRelation(atom->getName())->numberOfHeightParameters();
+					auto literalLevelIndex = arity - literalHeights;
 
-                intermediateClause->addToBody(std::make_unique<AstBinaryConstraint>(BinaryConstraintOp::EQ,
-                        std::unique_ptr<AstArgument>(atom->getArgument(literalLevelIndex)->clone()),
-                        std::make_unique<AstSubroutineArgument>(levelIndex)));
-            }
-            levelIndex++;
+					intermediateClause->addToBody(std::make_unique<AstBinaryConstraint>(BinaryConstraintOp::EQ,
+							std::unique_ptr<AstArgument>(atom->getArgument(literalLevelIndex)->clone()),
+							std::make_unique<AstSubroutineArgument>(levelIndex)));
+				}
+				levelIndex++;
+			}
+        } else {
+        	for (size_t i = 0; i < intermediateClause->getBodyLiterals().size(); i++) {
+				auto lit = intermediateClause->getBodyLiteral(i);
+				if (auto atom = dynamic_cast<AstAtom*>(lit)) {
+					auto arity = atom->getArity();
+					auto literalHeights = program->getRelation(atom->getName())->numberOfHeightParameters();
+					auto literalLevelIndex = arity - literalHeights;
+
+					intermediateClause->addToBody(std::make_unique<AstBinaryConstraint>(BinaryConstraintOp::LE,
+							std::unique_ptr<AstArgument>(atom->getArgument(literalLevelIndex)->clone()),
+							std::make_unique<AstSubroutineArgument>(levelIndex)));
+
+				}
+				levelIndex++;
+			}
         }
+
+
     } else {
         // index of level argument in argument list
         size_t levelIndex = head->getArguments().size() - numberOfHeights - 1;
@@ -1766,9 +1785,20 @@ void AstTranslator::translateProgram(const AstTranslationUnit& translationUnit) 
 
             ramProg->addSubroutine(subroutineLabel, makeSubproofSubroutine(clause));
 
+            std::string updatesSubroutineLabel =
+                    relName.str() + "_" + std::to_string(clause.getClauseNum()) + "_subproof_updates";
+
+            ramProg->addSubroutine(updatesSubroutineLabel, makeSubproofSubroutine(clause, true));
+
             std::string negationSubroutineLabel =
                     relName.str() + "_" + std::to_string(clause.getClauseNum()) + "_negation_subproof";
             ramProg->addSubroutine(negationSubroutineLabel, makeNegationSubproofSubroutine(clause));
+
+            //TODO (sarah) add updates subroutine for negation
+            std::string updatesNegationSubroutineLabel =
+					relName.str() + "_" + std::to_string(clause.getClauseNum()) + "_negation_subproof_updates";
+			ramProg->addSubroutine(updatesNegationSubroutineLabel, makeNegationSubproofSubroutine(clause) /*flag*/);
+
         });
     }
 }

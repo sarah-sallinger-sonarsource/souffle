@@ -2307,8 +2307,17 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
         for (auto& sub : prog.getSubroutines()) {
             os << "if (name == \"" << sub.first << "\") {\n"
                << "subproof_" << subroutineNum
-               << "(args, ret, err);\n"  // subproof_i to deal with special characters in relation names
-               << "}\n";
+               << "(args, ret, err);\n";  // subproof_i to deal with special characters in relation names
+
+			   //TODO(sarah) add only for those that are not update subroutines themselves
+			   if(subroutineNum % 2 == 0) {
+			   os << "if (ret.empty()) {"
+			   << "subproof_" << subroutineNum + 1
+			   << "(args, ret, err);\n"
+			   << "}\n";
+			   }
+			os << "}\n";
+
             subroutineNum++;
         }
         os << "}\n";  // end of executeSubroutine

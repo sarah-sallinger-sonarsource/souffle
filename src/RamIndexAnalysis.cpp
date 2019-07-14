@@ -115,7 +115,7 @@ const MaxMatching::Matchings& MaxMatching::solve() {
     return match;
 }
 
-void MinIndexSelection::solve() {
+void MinIndexSelection::solve(int arity, int nrHeights) {
     // map the keys in the key set to lexicographical order
     if (searches.empty()) {
         return;
@@ -161,7 +161,8 @@ void MinIndexSelection::solve() {
     for (auto search : searches) {
         // For this node check if other nodes are strict subsets
         for (auto itt : searches) {
-            if (isStrictSubset(search, itt)) {
+            if (!(!isProvSearch(search, arity, nrHeights) && isProvSearch(itt, arity, nrHeights)) && isStrictSubset(search, itt)) {
+
                 matching.addEdge(search, toB(itt));
             }
         }
@@ -317,7 +318,7 @@ void RamIndexAnalysis::run(const RamTranslationUnit& translationUnit) {
     // find optimal indexes for relations
     for (auto& cur : minIndexCover) {
         MinIndexSelection& indexes = cur.second;
-        indexes.solve();
+        indexes.solve(cur.first->getArity(), cur.first->getNumberOfHeights());
     }
 
     // Only case where indexSet is still empty is when relation has arity == 0
