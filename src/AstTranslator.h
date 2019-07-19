@@ -381,7 +381,7 @@ private:
             const std::set<const AstRelation*>& scc, const RecursiveClauses* recursiveClauses);
 
     /** translate RAM code for subroutine to get subproofs */
-    std::unique_ptr<RamStatement> makeSubproofSubroutine(const AstClause& clause, bool updates=false);
+    std::unique_ptr<RamStatement> makeSubproofSubroutine(const AstClause& clause);
 
     /** translate RAM code for subroutine to get subproofs */
     std::unique_ptr<RamStatement> makeSubproofSubroutineOpt(const AstClause& clause);
