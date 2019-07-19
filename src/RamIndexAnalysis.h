@@ -201,7 +201,7 @@ public:
     }
 
     /** @Brief map the keys in the key set to lexicographical order */
-    void solve(int arity, int nrHeights);
+    void solve();
 
     /** @Brief convert from a representation of A vertices to B vertices */
     static SearchSignature toB(SearchSignature a) {
@@ -268,13 +268,6 @@ protected:
     static bool isStrictSubset(SearchSignature a, SearchSignature b) {
         auto tt = static_cast<SearchSignature>(std::numeric_limits<SearchSignature>::max());
         return (~(a) | (b)) == tt && a != b;
-    }
-
-    /** @Brief determine if key a is a provenance search*/
-    static bool isProvSearch(SearchSignature a, int arity, int nrHeights) {
-        SearchSignature full = (1 << arity) - 1;
-        SearchSignature provCols = a >> (nrHeights + 1);
-        return a != full && provCols > 0;
     }
 
     /** @Brief insert an index based on the delta */
