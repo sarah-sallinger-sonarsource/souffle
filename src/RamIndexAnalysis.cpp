@@ -161,8 +161,8 @@ void MinIndexSelection::solve(int arity, int nrHeights) {
     for (auto search : searches) {
         // For this node check if other nodes are strict subsets
         for (auto itt : searches) {
-            if (!(!isProvSearch(search, arity, nrHeights) && isProvSearch(itt, arity, nrHeights)) && isStrictSubset(search, itt)) {
-
+            if (!(!isProvSearch(search, arity, nrHeights) && isProvSearch(itt, arity, nrHeights)) &&
+                    isStrictSubset(search, itt)) {
                 matching.addEdge(search, toB(itt));
             }
         }

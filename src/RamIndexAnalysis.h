@@ -272,9 +272,9 @@ protected:
 
     /** @Brief determine if key a is a provenance search*/
     static bool isProvSearch(SearchSignature a, int arity, int nrHeights) {
-    	SearchSignature full = (1 << arity) - 1;
-    	SearchSignature provCols = a >> (nrHeights + 1);
-    	return a != full && provCols > 0;
+        SearchSignature full = (1 << arity) - 1;
+        SearchSignature provCols = a >> (nrHeights + 1);
+        return a != full && provCols > 0;
     }
 
     /** @Brief insert an index based on the delta */

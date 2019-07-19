@@ -1360,32 +1360,30 @@ void Synthesiser::emitCode(std::ostream& out, const RamStatement& stmt, bool cou
 
             visit(*(provExists.getValues()[arity - numberOfHeights]), out);
             out << ")";
-            if(numberOfHeights > 1) {
-				out << " &&  !("
-								<< "(*existenceCheck.begin())["
-												<< arity - numberOfHeights << "] == ";
-								visit(*(provExists.getValues()[arity - numberOfHeights]), out);
+            if (numberOfHeights > 1) {
+                out << " &&  !("
+                    << "(*existenceCheck.begin())[" << arity - numberOfHeights << "] == ";
+                visit(*(provExists.getValues()[arity - numberOfHeights]), out);
 
-				//out << ")";}
-				out << " && (";
+                // out << ")";}
+                out << " && (";
 
-				out << "(*existenceCheck.begin())[" << arity - numberOfHeights + 1 << "] > ";
-				visit(*(provExists.getValues()[arity - numberOfHeights + 1]), out);
-				//out << "))";}
-				for(int i = arity - numberOfHeights + 2; i < (int)arity; i ++ ) {
-					out << " || (";
-					 for(int j = arity - numberOfHeights + 1; j < i; j++){
-						 out << "(*existenceCheck.begin())[" << j << "] == ";
-						 visit(*(provExists.getValues()[j]), out);
-						 out << " && ";
-					 }
-					 out << "(*existenceCheck.begin())["
-							<< i << "] > ";
-					 visit(*(provExists.getValues()[i]), out);
-					out << ")";
-				}
+                out << "(*existenceCheck.begin())[" << arity - numberOfHeights + 1 << "] > ";
+                visit(*(provExists.getValues()[arity - numberOfHeights + 1]), out);
+                // out << "))";}
+                for (int i = arity - numberOfHeights + 2; i < (int)arity; i++) {
+                    out << " || (";
+                    for (int j = arity - numberOfHeights + 1; j < i; j++) {
+                        out << "(*existenceCheck.begin())[" << j << "] == ";
+                        visit(*(provExists.getValues()[j]), out);
+                        out << " && ";
+                    }
+                    out << "(*existenceCheck.begin())[" << i << "] > ";
+                    visit(*(provExists.getValues()[i]), out);
+                    out << ")";
+                }
 
-				out << "))";
+                out << "))";
             }
             out << ";}()\n";
             PRINT_END_COMMENT(out);
@@ -2336,7 +2334,7 @@ void Synthesiser::generateCode(std::ostream& os, const std::string& id, bool& wi
         for (auto& sub : prog.getSubroutines()) {
             os << "if (name == \"" << sub.first << "\") {\n"
                << "subproof_" << subroutineNum
-               << "(args, ret, err);\n";  // subproof_i to deal with special characters in relation names
+               << "(args, ret, err);\n"  // subproof_i to deal with special characters in relation names
                << "}\n";
 
             subroutineNum++;
